@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import puppeteer from "puppeteer"
+import puppeteer from "puppeteer-core"
+import chromium from "@sparticuz/chromium";
 import fs from "fs"
 import path from "path"
 
 export async function POST(request: NextRequest) {
-  let browser;
-  
   try {
     const { resume, template = "modern" } = await request.json()
 
@@ -26,30 +25,7 @@ export async function POST(request: NextRequest) {
     // Replace placeholders with actual data
     templateContent = replacePlaceholders(templateContent, resumeData)
     
-    // Launch Puppeteer
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    })
-    
-    const page = await browser.newPage()
-    
-    // Set content and wait for fonts to load
-    await page.setContent(templateContent, { waitUntil: 'networkidle0' })
-    
-    // Generate PDF
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '0.5in',
-        right: '0.5in',
-        bottom: '0.5in',
-        left: '0.5in'
-      }
-    })
-
-    await browser.close()
+    const pdfBuffer = await generatePDF(templateContent)
 
     // Convert Uint8Array to Buffer for NextResponse
     const buffer = Buffer.from(pdfBuffer)
@@ -62,14 +38,32 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error generating PDF:", error)
-    if (browser) {
-      await browser.close()
-    }
     return NextResponse.json(
       { error: "Failed to generate PDF" },
       { status: 500 }
     )
   }
+}
+
+export async function generatePDF(html: string) {
+  const executablePath = await chromium.executablePath();
+  
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    executablePath,
+    headless: true, // true on serverless, false locally if you want debugging
+  });
+
+  const page = await browser.newPage();
+  await page.setContent(html, { waitUntil: "networkidle0" });
+
+  const pdf = await page.pdf({
+    format: "A4",
+    printBackground: true,
+  });
+
+  await browser.close();
+  return pdf;
 }
 
 function parseResumeContent(resume: string) {
