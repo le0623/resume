@@ -51,7 +51,10 @@ export async function POST(request: NextRequest) {
 
     await browser.close()
 
-    return new NextResponse(pdfBuffer, {
+    // Convert Uint8Array to Buffer for NextResponse
+    const buffer = Buffer.from(pdfBuffer)
+
+    return new NextResponse(buffer, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename="resume.pdf"',
@@ -70,7 +73,7 @@ export async function POST(request: NextRequest) {
 }
 
 function parseResumeContent(resume: string) {
-  const data: any = {
+  const data = {
     NAME: "John Doe",
     TITLE: "Software Engineer",
     EMAIL: "john.doe@email.com",
@@ -134,7 +137,7 @@ function parseResumeContent(resume: string) {
   return data
 }
 
-function replacePlaceholders(template: string, data: any) {
+function replacePlaceholders(template: string, data: Record<string, string>) {
   let result = template
   
   Object.keys(data).forEach(key => {

@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
-import { Loader2, FileText, Download, Palette, Eye, X } from "lucide-react"
+import { Loader2, FileText, Download, Palette, Eye } from "lucide-react"
 
 interface Template {
   id: string

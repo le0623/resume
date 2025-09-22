@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 }
 
 function parseResumeContent(resume: string) {
-  const data: any = {
+  const data = {
     NAME: "John Doe",
     TITLE: "Software Engineer",
     EMAIL: "john.doe@email.com",
@@ -98,7 +98,7 @@ function parseResumeContent(resume: string) {
   return data
 }
 
-function replacePlaceholders(template: string, data: any) {
+function replacePlaceholders(template: string, data: Record<string, string>) {
   let result = template
   
   Object.keys(data).forEach(key => {
