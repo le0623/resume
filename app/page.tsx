@@ -1,5 +1,6 @@
 import { ResumeGenerator } from "@/components/resume-generator"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
+import { SignOutBtn } from "@/components/signout-btn"
 
 export default function Home() {
   return (
@@ -10,7 +11,10 @@ export default function Home() {
           <div>
             <h1 className="text-2xl font-bold">Resume Generator</h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <SignOutBtn />
+          </div>
         </div>
       </header>
       <main className="container mx-auto py-8 flex-1">
