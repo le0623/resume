@@ -1,0 +1,25 @@
+{
+  "templates": [
+    {
+      "id": "modern",
+      "name": "Modern",
+      "description": "Clean and professional design with blue accents",
+      "preview": "/templates/modern.html",
+      "file": "modern.html"
+    },
+    {
+      "id": "classic",
+      "name": "Classic",
+      "description": "Traditional serif font with formal layout",
+      "preview": "/templates/classic.html",
+      "file": "classic.html"
+    },
+    {
+      "id": "creative",
+      "name": "Creative",
+      "description": "Modern gradient design with creative elements",
+      "preview": "/templates/creative.html",
+      "file": "creative.html"
+    }
+  ]
+}
