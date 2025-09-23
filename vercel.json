@@ -1,10 +1,9 @@
 {
   "functions": {
-    "api/**/*.ts": {
+    "app/api/generate-pdf/route.ts": {
       "includeFiles": "node_modules/@sparticuz/chromium/bin/**",
       "memory": 1024,
-      "maxDuration": 30,
-      "runtime": "nodejs22.x"
+      "maxDuration": 30
     }
   }
 }
