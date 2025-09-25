@@ -1,0 +1,51 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: resume-gen-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: resume_gen
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups  # Optional: for database backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d resume_gen"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: resume-gen-app
+    restart: unless-stopped
+    ports:
+      - "25925:25925"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/resume_gen
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Redis for caching (optional, for future use)
+  redis:
+    image: redis:7-alpine
+    container_name: resume-gen-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

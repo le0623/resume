@@ -1,225 +1,358 @@
 # Resume Generator
 
-A modern web application that generates tailored resumes based on job descriptions using OpenAI's GPT models. Built with Next.js, Tailwind CSS, and shadcn/ui components.
+A modern resume generation application built with Next.js, PostgreSQL, Prisma, and Docker. Generate professional resumes using AI with customizable templates and profiles.
 
-## ✨ Features
+## Features
 
-- 🌙 **Dark/Light Mode**: Toggle between themes with a beautiful UI
-- 🤖 **AI-Powered**: Uses OpenAI GPT to generate tailored resumes
-- 📄 **PDF Export**: Download generated resumes as PDF files using Puppeteer
-- 🎨 **Multiple Templates**: Choose from 3 beautiful resume templates
-- 👁️ **Template Preview**: Preview templates before generating your resume
-- 📱 **Responsive Design**: Works perfectly on desktop and mobile
-- ⚡ **Modern UI**: Built with Tailwind CSS and shadcn/ui components
+- **AI-Powered Resume Generation**: Uses OpenAI GPT to generate tailored resumes based on job descriptions
+- **Profile Management**: Store and manage user profiles with personal information, skills, and experience
+- **Template System**: Customizable HTML templates for different resume styles
+- **Admin Portal**: Complete admin interface for managing profiles, templates, and viewing analytics
+- **Analytics Dashboard**: Track resume generation with daily, weekly, and monthly charts
+- **PDF Export**: Generate professional PDF resumes
+- **Docker Support**: Easy deployment with Docker and Docker Compose
+- **Database Integration**: PostgreSQL with Prisma ORM for data persistence
 
-## 🎨 Available Templates
+## Tech Stack
 
-### 1. Modern Template
-- Clean and professional design
-- Blue color scheme
-- Grid-based layout for skills
-- Perfect for tech professionals
+- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: PostgreSQL
+- **AI**: OpenAI GPT-4
+- **PDF Generation**: Puppeteer with Chromium
+- **Charts**: Recharts
+- **UI Components**: Radix UI, Lucide React
+- **Authentication**: WorkOS AuthKit
+- **Deployment**: Docker, Docker Compose
 
-### 2. Classic Template
-- Traditional serif font
-- Formal black and white layout
-- Two-column skills layout
-- Ideal for corporate environments
-
-### 3. Creative Template
-- Modern gradient design
-- Colorful and eye-catching
-- Creative visual elements
-- Great for designers and creatives
-
-## 🚀 Getting Started
+## Quick Start
 
 ### Prerequisites
 
-- Node.js 18.17.0 or higher
-- npm or yarn
+- Docker and Docker Compose
+- Make (optional, for easy commands)
 - OpenAI API key
+- WorkOS credentials (for authentication)
 
-### Installation
+### Database Persistence
 
-1. Clone the repository:
+**Important**: The database data is now persisted between restarts! The PostgreSQL data is stored in a Docker volume that persists even when containers are stopped and restarted.
+
+- **First time setup**: Run `make first-time` or `make quick-start`
+- **Regular restarts**: Use `make up` or `make dev` - your data will be preserved
+- **Reset database**: Only run `make db-setup` or `make db-reset` when you want to reset data
+
+### 1. Clone and Setup
+
 ```bash
 git clone <repository-url>
 cd resume-gen
 ```
 
-2. Install dependencies:
+### 2. Environment Configuration
+
+Create a `.env` file in the root directory:
+
+```env
+# Database
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/resume_gen"
+
+# OpenAI
+OPENAI_API_KEY="your_openai_api_key_here"
+
+# WorkOS (for authentication)
+WORKOS_CLIENT_ID="your_workos_client_id"
+WORKOS_CLIENT_SECRET="your_workos_client_secret"
+WORKOS_REDIRECT_URI="http://localhost:25925/callback"
+
+# NextAuth
+NEXTAUTH_SECRET="your_nextauth_secret_here"
+NEXTAUTH_URL="http://localhost:25925"
+```
+
+### 3. Start with Make (Recommended)
+
 ```bash
+# Quick start for new users (includes database setup)
+make quick-start
+
+# Or step by step:
+make first-time  # Start services and setup database
+# OR
+make up          # Start all services only
+make db-setup    # Setup database (only needed once or to reset)
+```
+
+### 4. Alternative: Direct Docker Commands
+
+```bash
+# Start all services
+docker-compose up -d
+
+# Run database migrations
+docker-compose exec app npm run db:push
+
+# Seed the database with initial data
+docker-compose exec app npm run db:seed
+```
+
+### 5. Access the Application
+
+- **Main App**: http://localhost:25925
+- **Admin Portal**: http://localhost:25925/admin
+- **Database**: localhost:5432 (postgres/postgres)
+
+## Makefile Commands
+
+The project includes a comprehensive Makefile for easy management:
+
+### Essential Commands
+
+```bash
+make help          # Show all available commands
+make quick-start   # Quick setup for new users
+make up            # Start all services
+make down          # Stop all services
+make restart       # Restart all services
+```
+
+### Development Commands
+
+```bash
+make dev           # Start development environment
+make dev-reset     # Reset development environment
+make logs          # View logs from all services
+make logs-app      # View app logs only
+make logs-db       # View database logs only
+```
+
+### Database Commands
+
+```bash
+make db-setup      # Setup database (migrate and seed) - USE ONLY ONCE or to reset
+make db-reset      # Reset database completely - DELETES ALL DATA
+make db-migrate    # Run migrations only (safe to run multiple times)
+make db-seed       # Seed database with sample data only
+make db-check      # Check if database needs initial setup
+make db-studio     # Open Prisma Studio
+make db-backup     # Backup database
+make db-restore    # Restore from backup (requires BACKUP_FILE=filename.sql)
+```
+
+### Maintenance Commands
+
+```bash
+make clean         # Clean up Docker resources
+make clean-all     # Clean up all Docker resources
+make status        # Show service status
+make health        # Check service health
+make monitor       # Monitor resource usage
+```
+
+### Production Commands
+
+```bash
+make build         # Build Docker images
+make deploy        # Deploy to production
+make security-scan # Run security scan
+make update        # Update dependencies
+```
+
+## Development Setup
+
+### Local Development
+
+```bash
+# Using Makefile (recommended)
+make dev
+
+# Or manually:
 npm install
-```
-
-3. Set up environment variables:
-```bash
-cp .env.local.example .env.local
-```
-
-4. Add your OpenAI API key to `.env.local`:
-```
-OPENAI_API_KEY=your_openai_api_key_here
-```
-
-5. Run the development server:
-```bash
+docker-compose up postgres -d
+npm run db:push
+npm run db:seed
 npm run dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+### Database Commands
 
-## 📖 Usage
+```bash
+# Generate Prisma client
+npm run db:generate
 
-1. **Enter Job Information**: 
-   - Optionally provide a job URL
-   - Paste the job description in the text area
+# Push schema changes
+npm run db:push
 
-2. **Select Template**: 
-   - Choose from 3 available templates
-   - Preview templates before generating
+# Create and run migrations
+npm run db:migrate
 
-3. **Generate Resume**: 
-   - Click "Generate Resume" to create an AI-tailored resume
-   - The resume will appear in the right panel
+# Open Prisma Studio
+npm run db:studio
 
-4. **Download PDF**: 
-   - Click "Download as PDF" to save the resume as a PDF file
-   - The PDF will be generated using the selected template
-
-## 🔧 API Endpoints
-
-### POST /api/generate-resume
-Generates a resume based on job information.
-
-**Request Body:**
-```json
-{
-  "jobUrl": "https://example.com/job-posting",
-  "jobDescription": "Job description text..."
-}
+# Seed database
+npm run db:seed
 ```
 
-**Response:**
-```json
-{
-  "resume": "Generated resume text..."
-}
-```
-
-### POST /api/generate-pdf
-Converts resume text to PDF format using the selected template.
-
-**Request Body:**
-```json
-{
-  "resume": "Resume text to convert...",
-  "template": "modern"
-}
-```
-
-**Response:** PDF file download
-
-### GET /api/templates
-Returns available resume templates.
-
-**Response:**
-```json
-{
-  "templates": [
-    {
-      "id": "modern",
-      "name": "Modern",
-      "description": "Clean and professional design with blue accents",
-      "preview": "/templates/modern.html",
-      "file": "modern.html"
-    }
-  ]
-}
-```
-
-## 🛠️ Tech Stack
-
-- **Frontend**: Next.js 15, React 19, TypeScript
-- **Styling**: Tailwind CSS, shadcn/ui
-- **AI**: OpenAI GPT-3.5-turbo
-- **PDF Generation**: Puppeteer
-- **Theme**: next-themes
-- **Icons**: Lucide React
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 resume-gen/
-├── app/
-│   ├── api/
-│   │   ├── generate-resume/
-│   │   ├── generate-pdf/
-│   │   └── templates/
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
-├── components/
-│   ├── theme/
-│   │   ├── theme-provider.tsx
-│   │   └── theme-toggle.tsx
-│   ├── ui/
-│   │   ├── button.tsx
-│   │   ├── card.tsx
-│   │   ├── input.tsx
-│   │   ├── label.tsx
-│   │   ├── textarea.tsx
-│   │   └── switch.tsx
-│   └── resume-generator.tsx
-├── templates/
-│   ├── modern.html
-│   ├── classic.html
-│   ├── creative.html
-│   └── templates.json
-├── public/
-│   └── templates/
-│       ├── modern.html
-│       ├── classic.html
-│       └── creative.html
-└── lib/
-    └── utils.ts
+├── app/                    # Next.js app directory
+│   ├── api/               # API routes
+│   │   ├── admin/         # Admin API endpoints
+│   │   ├── generate-pdf/  # PDF generation
+│   │   ├── generate-resume/ # Resume generation
+│   │   ├── preview-template/ # Template preview
+│   │   └── templates/     # Template management
+│   ├── admin/             # Admin portal pages
+│   └── page.tsx           # Main application page
+├── components/            # React components
+│   ├── admin/             # Admin portal components
+│   ├── ui/                # Reusable UI components
+│   └── resume-generator-v2.tsx # Main resume generator
+├── lib/                   # Utility libraries
+│   ├── prisma.ts          # Prisma client
+│   └── utils.ts           # Utility functions
+├── prisma/                # Database schema and migrations
+│   ├── schema.prisma      # Database schema
+│   └── seed.ts            # Database seeding
+├── public/                # Static assets
+├── templates/             # HTML templates
+├── docker-compose.yml     # Docker services
+├── Dockerfile            # Application container
+└── package.json          # Dependencies and scripts
 ```
 
-## 🎯 Template Customization
+## Database Schema
 
-Templates are located in the `/templates` directory. Each template uses placeholder variables:
+### Profiles Table
+- `id`: UUID primary key
+- `name`: User's full name
+- `email`: Contact email
+- `phone`: Phone number (optional)
+- `address`: Physical address (optional)
+- `summary`: Professional summary
+- `skills`: Technical skills
+- `experience`: Work experience
+- `education`: Educational background
+- `projects`: Project portfolio
+- `certifications`: Professional certifications
+- `createdAt`/`updatedAt`: Timestamps
 
-- `{{NAME}}` - Candidate name
-- `{{TITLE}}` - Job title
-- `{{EMAIL}}` - Email address
-- `{{PHONE}}` - Phone number
-- `{{LOCATION}}` - Location
-- `{{SUMMARY}}` - Professional summary
-- `{{SKILLS}}` - Technical skills (HTML formatted)
-- `{{EXPERIENCE}}` - Work experience (HTML formatted)
-- `{{EDUCATION}}` - Education (HTML formatted)
-- `{{PROJECTS}}` - Projects (HTML formatted)
-- `{{CERTIFICATIONS}}` - Certifications (HTML formatted)
+### Templates Table
+- `id`: UUID primary key
+- `name`: Template name
+- `description`: Template description
+- `html`: HTML template content
+- `isActive`: Template availability status
+- `createdAt`/`updatedAt`: Timestamps
 
-## 🚀 Deployment
+### Resumes Table
+- `id`: UUID primary key
+- `jobUrl`: Job posting URL (optional)
+- `jobDescription`: Job description text
+- `generatedResume`: AI-generated resume content
+- `profileId`: Foreign key to profiles
+- `templateId`: Foreign key to templates
+- `createdAt`/`updatedAt`: Timestamps
 
-The application can be deployed to any platform that supports Next.js:
+## API Endpoints
 
-1. **Vercel** (Recommended)
-2. **Netlify**
-3. **Railway**
-4. **DigitalOcean App Platform**
+### Public Endpoints
+- `GET /api/templates` - Get available templates
+- `POST /api/generate-resume` - Generate resume with AI
+- `POST /api/preview-template` - Preview resume with template
+- `POST /api/generate-pdf` - Generate PDF resume
 
-Make sure to set the `OPENAI_API_KEY` environment variable in your deployment platform.
+### Admin Endpoints
+- `GET /api/admin/profiles` - List all profiles
+- `POST /api/admin/profiles` - Create new profile
+- `GET /api/admin/profiles/[id]` - Get profile details
+- `PUT /api/admin/profiles/[id]` - Update profile
+- `DELETE /api/admin/profiles/[id]` - Delete profile
+- `GET /api/admin/templates` - List all templates
+- `POST /api/admin/templates` - Create new template
+- `GET /api/admin/templates/[id]` - Get template details
+- `PUT /api/admin/templates/[id]` - Update template
+- `DELETE /api/admin/templates/[id]` - Delete template
+- `GET /api/admin/resumes` - List all generated resumes
+- `GET /api/admin/analytics` - Get analytics data
 
-## 🤝 Contributing
+## Admin Portal Features
+
+### Analytics Dashboard
+- Resume generation statistics
+- Daily, weekly, monthly charts
+- Recent activity tracking
+- Total counts for profiles, templates, and resumes
+
+### Profile Management
+- Create, edit, and delete user profiles
+- Form-based profile editing
+- Profile listing with resume counts
+
+### Template Management
+- Create, edit, and delete resume templates
+- HTML template editor
+- Template activation/deactivation
+- Template usage statistics
+
+### Resume Browser
+- View all generated resumes
+- Search and filter resumes
+- Preview resume content
+- Download PDF resumes
+
+## Deployment
+
+### Production Deployment
+
+1. **Environment Setup**:
+   ```bash
+   # Set production environment variables
+   export NODE_ENV=production
+   export DATABASE_URL="postgresql://user:pass@host:5432/db"
+   export OPENAI_API_KEY="your_production_key"
+   # ... other production variables
+   ```
+
+2. **Docker Deployment**:
+   ```bash
+   # Build and start production containers
+   docker-compose -f docker-compose.prod.yml up -d
+   ```
+
+3. **Database Migration**:
+   ```bash
+   # Run migrations in production
+   docker-compose exec app npm run db:push
+   docker-compose exec app npm run db:seed
+   ```
+
+### Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DATABASE_URL` | PostgreSQL connection string | Yes |
+| `OPENAI_API_KEY` | OpenAI API key for resume generation | Yes |
+| `WORKOS_CLIENT_ID` | WorkOS client ID for authentication | Yes |
+| `WORKOS_CLIENT_SECRET` | WorkOS client secret | Yes |
+| `WORKOS_REDIRECT_URI` | WorkOS redirect URI | Yes |
+| `NEXTAUTH_SECRET` | NextAuth secret key | Yes |
+| `NEXTAUTH_URL` | Application URL | Yes |
+
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Submit a pull request
+4. Add tests if applicable
+5. Submit a pull request
 
-## 📄 License
+## License
 
-MIT License - see LICENSE file for details.
+This project is licensed under the MIT License.
+
+## Support
+
+For support and questions, please open an issue in the repository.

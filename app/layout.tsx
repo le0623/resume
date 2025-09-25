@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { AuthKitProvider } from "@workos-inc/authkit-nextjs/components";
+import { SWRProvider } from "@/components/providers/swr-provider";
+import { Header } from "@/components/layout/header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +38,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthKitProvider>
-            {children}
+            <SWRProvider>
+              <div className="min-h-screen bg-background">
+                <Header />
+                {children}
+              </div>
+            </SWRProvider>
           </AuthKitProvider>
         </ThemeProvider>
       </body>
