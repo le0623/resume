@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import puppeteer from "puppeteer-core"
-import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer"
 import { prisma } from "@/lib/prisma"
 import { 
   parseResumeContent, 
@@ -64,12 +63,14 @@ export async function POST(request: NextRequest) {
 }
 
 export async function generatePDF(html: string) {
-  const executablePath = await chromium.executablePath();
-  
   const browser = await puppeteer.launch({
-    args: chromium.args,
-    executablePath,
-    headless: true, // true on serverless, false locally if you want debugging
+    headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+    ],
   });
 
   const page = await browser.newPage();
