@@ -10,6 +10,8 @@ export function AnalyticsDashboard() {
     endDate,
     setStartDate,
     setEndDate,
+    setLastWeek,
+    setLastMonth,
     summaryError,
     summaryLoading,
     timeseriesError,
@@ -61,6 +63,8 @@ export function AnalyticsDashboard() {
             endDate={endDate}
             onStartDateChange={setStartDate}
             onEndDateChange={setEndDate}
+            onSetLastWeek={setLastWeek}
+            onSetLastMonth={setLastMonth}
             error={timeseriesError}
           />
         </div>

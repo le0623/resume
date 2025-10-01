@@ -15,28 +15,30 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const startDate = new Date(startDateParam)
-    const endDate = new Date(endDateParam)
-    
-    // Set end date to end of day
-    endDate.setHours(23, 59, 59, 999)
+    const startDate = new Date(startDateParam + 'T00:00:00.000Z')
+    const endDate = new Date(endDateParam + 'T23:59:59.999Z')
 
-    // Get resume generation counts
-    const resumeCounts = await prisma.resume.groupBy({
-      by: ['createdAt'],
+    // Get resume count grouped by creation timestamp
+    const resumes = await prisma.resume.findMany({
       where: {
         createdAt: {
           gte: startDate,
           lte: endDate
         }
       },
-      _count: {
-        id: true
+      select: {
+        createdAt: true
       },
       orderBy: {
         createdAt: 'asc'
       }
     })
+
+    // Return raw timestamps for frontend aggregation
+    const resumeCounts = resumes.map(resume => ({
+      createdAt: resume.createdAt.toISOString(),
+      _count: { id: 1 }
+    }))
 
     return NextResponse.json({
       startDate: startDateParam,

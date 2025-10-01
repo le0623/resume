@@ -1,7 +1,8 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { XAxis, YAxis, CartesianGrid, LineChart, Line } from "recharts"
+import { Button } from "@/components/ui/button"
+import { XAxis, YAxis, CartesianGrid, BarChart, Bar } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Calendar as CalendarIcon } from "lucide-react"
 import { DateRangePicker } from "./date-range-picker"
@@ -19,13 +20,15 @@ interface AnalyticsChartProps {
   endDate?: Date
   onStartDateChange?: (date: Date | undefined) => void
   onEndDateChange?: (date: Date | undefined) => void
+  onSetLastWeek?: () => void
+  onSetLastMonth?: () => void
   error?: Error | null
 }
 
 const chartConfig = {
   count: {
     label: "Resumes",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(217, 91%, 60%)", // Blue color
   },
 }
 
@@ -37,6 +40,8 @@ export function AnalyticsChart({
   endDate, 
   onStartDateChange, 
   onEndDateChange,
+  onSetLastWeek,
+  onSetLastMonth,
   error
 }: AnalyticsChartProps) {
   if (error) {
@@ -50,9 +55,19 @@ export function AnalyticsChart({
                 Number of resumes generated over time
               </CardDescription>
             </div>
-            {/* Date Range Picker - Always visible */}
+            {/* Date Range Picker and Quick Selection - Always visible */}
             {onStartDateChange && onEndDateChange && (
               <div className="flex gap-2">
+                {onSetLastWeek && (
+                  <Button variant="outline" size="sm" onClick={onSetLastWeek}>
+                    Last 7 Days
+                  </Button>
+                )}
+                {onSetLastMonth && (
+                  <Button variant="outline" size="sm" onClick={onSetLastMonth}>
+                    Last 30 Days
+                  </Button>
+                )}
                 <DateRangePicker
                   startDate={startDate}
                   endDate={endDate}
@@ -86,9 +101,19 @@ export function AnalyticsChart({
                 Number of resumes generated over time
               </CardDescription>
             </div>
-            {/* Date Range Picker - Always visible */}
+            {/* Date Range Picker and Quick Selection - Always visible */}
             {onStartDateChange && onEndDateChange && (
               <div className="flex gap-2">
+                {onSetLastWeek && (
+                  <Button variant="outline" size="sm" onClick={onSetLastWeek}>
+                    Last 7 Days
+                  </Button>
+                )}
+                {onSetLastMonth && (
+                  <Button variant="outline" size="sm" onClick={onSetLastMonth}>
+                    Last 30 Days
+                  </Button>
+                )}
                 <DateRangePicker
                   startDate={startDate}
                   endDate={endDate}
@@ -121,9 +146,19 @@ export function AnalyticsChart({
                 Number of resumes generated over time
               </CardDescription>
             </div>
-            {/* Date Range Picker - Always visible */}
+            {/* Date Range Picker and Quick Selection - Always visible */}
             {onStartDateChange && onEndDateChange && (
               <div className="flex gap-2">
+                {onSetLastWeek && (
+                  <Button variant="outline" size="sm" onClick={onSetLastWeek}>
+                    Last 7 Days
+                  </Button>
+                )}
+                {onSetLastMonth && (
+                  <Button variant="outline" size="sm" onClick={onSetLastMonth}>
+                    Last 30 Days
+                  </Button>
+                )}
                 <DateRangePicker
                   startDate={startDate}
                   endDate={endDate}
@@ -157,9 +192,19 @@ export function AnalyticsChart({
                 Number of resumes generated over time
               </CardDescription>
             </div>
-            {/* Date Range Picker - Always visible */}
+            {/* Date Range Picker and Quick Selection - Always visible */}
             {onStartDateChange && onEndDateChange && (
               <div className="flex gap-2">
+                {onSetLastWeek && (
+                  <Button variant="outline" size="sm" onClick={onSetLastWeek}>
+                    Last 7 Days
+                  </Button>
+                )}
+                {onSetLastMonth && (
+                  <Button variant="outline" size="sm" onClick={onSetLastMonth}>
+                    Last 30 Days
+                  </Button>
+                )}
                 <DateRangePicker
                   startDate={startDate}
                   endDate={endDate}
@@ -192,9 +237,19 @@ export function AnalyticsChart({
               Number of resumes generated over time
             </CardDescription>
           </div>
-          {/* Date Range Picker - Always visible */}
+          {/* Date Range Picker and Quick Selection - Always visible */}
           {onStartDateChange && onEndDateChange && (
             <div className="flex gap-2">
+              {onSetLastWeek && (
+                <Button variant="outline" size="sm" onClick={onSetLastWeek}>
+                  Last 7 Days
+                </Button>
+              )}
+              {onSetLastMonth && (
+                <Button variant="outline" size="sm" onClick={onSetLastMonth}>
+                  Last 30 Days
+                </Button>
+              )}
               <DateRangePicker
                 startDate={startDate}
                 endDate={endDate}
@@ -207,20 +262,29 @@ export function AnalyticsChart({
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[400px] w-full">
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Line 
-              type="monotone" 
-              dataKey="count" 
-              stroke="var(--color-count)" 
-              strokeWidth={2}
-              dot={{ fill: "var(--color-count)" }}
-              activeDot={{ r: 6 }}
+          <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis 
+              dataKey="date" 
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              angle={-45}
+              textAnchor="end"
+              height={80}
             />
-          </LineChart>
+            <YAxis 
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+            />
+            <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }} />
+            <Bar 
+              dataKey="count" 
+              fill="var(--color-count)" 
+              radius={[4, 4, 0, 0]}
+            />
+          </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
