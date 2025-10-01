@@ -61,13 +61,13 @@ db-reset: ## Reset database (drop, recreate, and seed)
 db-backup: ## Create a database backup
 	@echo "💾 Creating database backup..."
 	@mkdir -p backups
-	@docker compose exec postgres pg_dump -U postgres resume_gen > backups/backup_$(shell date +%Y%m%d_%H%M%S).sql
+	@docker compose exec postgres pg_dump -U leon resume > backups/backup_$(shell date +%Y%m%d_%H%M%S).sql
 	@echo "✅ Database backup created in ./backups/"
 
 db-restore: ## Restore database from backup (requires BACKUP_FILE variable)
 	@echo "🔄 Restoring database from backup..."
 	@if [ -z "$(BACKUP_FILE)" ]; then echo "❌ Please specify BACKUP_FILE=filename.sql"; exit 1; fi
-	@docker compose exec -T postgres psql -U postgres -d resume_gen < backups/$(BACKUP_FILE)
+	@docker compose exec -T postgres psql -U leon -d resume < backups/$(BACKUP_FILE)
 	@echo "✅ Database restored from $(BACKUP_FILE)"
 
 db-studio: ## Open Prisma Studio
@@ -113,7 +113,7 @@ backup: ## Backup database
 
 restore: ## Restore database from backup (usage: make restore BACKUP_FILE=backup.sql)
 	@echo "📥 Restoring database from $(BACKUP_FILE)..."
-	docker compose exec -T postgres psql -U postgres resume_gen < $(BACKUP_FILE)
+	docker compose exec -T postgres psql -U leon resume < $(BACKUP_FILE)
 	@echo "✅ Database restored"
 
 # Environment setup
@@ -154,7 +154,6 @@ quick-start: ## Quick start for new users
 dev-reset: ## Reset development environment
 	@echo "🔄 Resetting development environment..."
 	@$(MAKE) down
-	@$(MAKE) clean
 	@$(MAKE) dev
 
 # Production deployment

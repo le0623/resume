@@ -2,12 +2,12 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: resume-gen-postgres
+    container_name: resume-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: resume_gen
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: resume
+      POSTGRES_USER: leon
+      POSTGRES_PASSWORD: adfi1mnaimlqoa
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     ports:
       - "5432:5432"
@@ -15,7 +15,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./backups:/backups  # Optional: for database backups
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d resume_gen"]
+      test: ["CMD-SHELL", "pg_isready -U leon -d resume"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,12 +26,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: resume-gen-app
+    container_name: resume-app
     restart: unless-stopped
     ports:
       - "25925:25925"
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/resume_gen
     depends_on:
       postgres:
         condition: service_healthy
@@ -39,7 +37,7 @@ services:
   # Redis for caching (optional, for future use)
   redis:
     image: redis:7-alpine
-    container_name: resume-gen-redis
+    container_name: resume-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
