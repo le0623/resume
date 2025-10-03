@@ -61,7 +61,8 @@ db-reset: ## Reset database (drop, recreate, and seed)
 db-backup: ## Create a database backup
 	@echo "💾 Creating database backup..."
 	@mkdir -p backups
-	@docker compose exec postgres pg_dump -U leon resume > backups/backup_$(shell date +%Y%m%d_%H%M%S).sql
+	@docker compose exec -T postgres pg_dump -U leon resume > backups/backup_$(shell date +%Y%m%d_%H%M%S).sql
+	@chmod 666 backups/backup_$(shell date +%Y%m%d_%H%M%S).sql 2>/dev/null || true
 	@echo "✅ Database backup created in ./backups/"
 
 db-restore: ## Restore database from backup (requires BACKUP_FILE variable)
