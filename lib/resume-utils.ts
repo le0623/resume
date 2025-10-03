@@ -37,48 +37,48 @@ export function parseResumeContent(resume: string): ResumeData {
   }
 
   // Extract sections using regex patterns - handle multi-line content
-  const nameMatch = resume.match(/\[Name\]\s*([\s\S]*?)\s*\[Name\]/i)
+  const nameMatch = resume.match(/\[Name\]\s*([\s\S]*?)\s*\[\/Name\]/i)
   if (nameMatch) data.NAME = nameMatch[1].trim()
 
-  const emailMatch = resume.match(/\[Email\]\s*([\s\S]*?)\s*\[Email\]/i)
+  const emailMatch = resume.match(/\[Email\]\s*([\s\S]*?)\s*\[\/Email\]/i)
   if (emailMatch) data.EMAIL = emailMatch[1].trim()
 
-  const phoneMatch = resume.match(/\[Phone\]\s*([\s\S]*?)\s*\[Phone\]/i)
+  const phoneMatch = resume.match(/\[Phone\]\s*([\s\S]*?)\s*\[\/Phone\]/i)
   if (phoneMatch) data.PHONE = phoneMatch[1].trim()
 
-  const locationMatch = resume.match(/\[Location\]\s*([\s\S]*?)\s*\[Location\]/i)
+  const locationMatch = resume.match(/\[Location\]\s*([\s\S]*?)\s*\[\/Location\]/i)
   if (locationMatch) data.LOCATION = locationMatch[1].trim()
 
   // Extract summary
-  const summaryMatch = resume.match(/\[PROFESSIONAL SUMMARY\]\s*([\s\S]*?)\s*\[PROFESSIONAL SUMMARY\]/i)
+  const summaryMatch = resume.match(/\[PROFESSIONAL SUMMARY\]\s*([\s\S]*?)\s*\[\/PROFESSIONAL SUMMARY\]/i)
   if (summaryMatch) data.SUMMARY = formatTextWithLineBreaks(summaryMatch[1].trim())
 
   // Extract skills
-  const skillsMatch = resume.match(/\[TECHNICAL SKILLS\]\s*([\s\S]*?)\s*\[TECHNICAL SKILLS\]/i)
+  const skillsMatch = resume.match(/\[TECHNICAL SKILLS\]\s*([\s\S]*?)\s*\[\/TECHNICAL SKILLS\]/i)
   if (skillsMatch) {
     data.SKILLS = formatSkills(skillsMatch[1].trim())
   }
 
   // Extract experience
-  const experienceMatch = resume.match(/\[PROFESSIONAL EXPERIENCE\]\s*([\s\S]*?)\s*\[PROFESSIONAL EXPERIENCE\]/i)
+  const experienceMatch = resume.match(/\[PROFESSIONAL EXPERIENCE\]\s*([\s\S]*?)\s*\[\/PROFESSIONAL EXPERIENCE\]/i)
   if (experienceMatch) {
     data.EXPERIENCE = formatExperience(experienceMatch[1].trim())
   }
 
   // Extract education
-  const educationMatch = resume.match(/\[EDUCATION\]\s*([\s\S]*?)\s*\[EDUCATION\]/i)
+  const educationMatch = resume.match(/\[EDUCATION\]\s*([\s\S]*?)\s*\[\/EDUCATION\]/i)
   if (educationMatch) {
     data.EDUCATION = formatEducation(educationMatch[1].trim())
   }
 
   // Extract projects
-  const projectsMatch = resume.match(/\[PROJECTS\]\s*([\s\S]*?)\s*\[PROJECTS\]/i)
+  const projectsMatch = resume.match(/\[PROJECTS\]\s*([\s\S]*?)\s*\[\/PROJECTS\]/i)
   if (projectsMatch) {
     data.PROJECTS = formatProjects(projectsMatch[1].trim())
   }
 
   // Extract certifications
-  const certsMatch = resume.match(/\[CERTIFICATIONS\]\s*([\s\S]*?)\s*\[CERTIFICATIONS\]/i)
+  const certsMatch = resume.match(/\[CERTIFICATIONS\]\s*([\s\S]*?)\s*\[\/CERTIFICATIONS\]/i)
   if (certsMatch) {
     data.CERTIFICATIONS = formatCertifications(certsMatch[1].trim())
   }
@@ -134,17 +134,24 @@ export function formatSkills(skillsText: string): string {
 
 /**
  * Format experience section with job entries
+ * Expected format:
+ * Job Title
+ * Company Name
+ * Date Range
+ * • Bullet points...
  */
 export function formatExperience(expText: string): string {
-  const items = expText.split(/\n(?=\w)/).filter(item => item.trim())
+  // Split by double line breaks (blank lines separate entries)
+  const items = expText.split(/\n\s*\n/).filter(item => item.trim())
   let html = ''
   
   items.forEach(item => {
-    const lines = item.split('\n').filter(line => line.trim())
-    if (lines.length > 0) {
+    const lines = item.split('\n').map(line => line.trim()).filter(line => line)
+    
+    if (lines.length >= 3) {
       const title = lines[0]
-      const company = lines[1] || ''
-      const date = lines[2] || ''
+      const company = lines[1]
+      const date = lines[2]
       const description = lines.slice(3).join('\n')
       
       html += `<div class="experience-item">
@@ -165,16 +172,22 @@ export function formatExperience(expText: string): string {
 
 /**
  * Format education section with degree entries
+ * Expected format:
+ * Degree Name, Major
+ * University Name
+ * Graduation Date
  */
 export function formatEducation(eduText: string): string {
-  const items = eduText.split(/\n(?=\w)/).filter(item => item.trim())
+  // Split by double line breaks (blank lines separate entries)
+  const items = eduText.split(/\n\s*\n/).filter(item => item.trim())
   let html = ''
   
   items.forEach(item => {
-    const lines = item.split('\n').filter(line => line.trim())
-    if (lines.length > 0) {
+    const lines = item.split('\n').map(line => line.trim()).filter(line => line)
+    
+    if (lines.length >= 2) {
       const degree = lines[0]
-      const school = lines[1] || ''
+      const school = lines[1]
       const date = lines[2] || ''
       
       html += `<div class="education-item">
@@ -194,13 +207,19 @@ export function formatEducation(eduText: string): string {
 
 /**
  * Format projects section with project entries
+ * Expected format:
+ * Project Name
+ * • Description bullet points...
+ * • Technologies used: ...
  */
 export function formatProjects(projText: string): string {
-  const items = projText.split(/\n(?=\w)/).filter(item => item.trim())
+  // Split by double line breaks (blank lines separate entries)
+  const items = projText.split(/\n\s*\n/).filter(item => item.trim())
   let html = ''
   
   items.forEach(item => {
-    const lines = item.split('\n').filter(line => line.trim())
+    const lines = item.split('\n').map(line => line.trim()).filter(line => line)
+    
     if (lines.length > 0) {
       const title = lines[0]
       const description = lines.slice(1).join('\n')

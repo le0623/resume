@@ -63,59 +63,80 @@ Please generate a complete resume in the following EXACT format with square brac
 
 [Name]
 [Extract and use the actual name from the profile data]
-[Name]
+[/Name]
 
 [Email]
 [Extract and use the actual email from the profile data]
-[Email]
+[/Email]
 
 [Phone]
 [Extract and use the actual phone from the profile data]
-[Phone]
+[/Phone]
 
 [Location]
 [Extract and use the actual location from the profile data]
-[Location]
+[/Location]
 
 [PROFESSIONAL SUMMARY]
 Write 2-3 sentences highlighting key qualifications and career objectives based on the profile and job requirements.
-[PROFESSIONAL SUMMARY]
+[/PROFESSIONAL SUMMARY]
 
 [TECHNICAL SKILLS]
 List relevant technical skills, programming languages, tools, etc. from the profile that match the job requirements.
-[TECHNICAL SKILLS]
+[/TECHNICAL SKILLS]
 
 [PROFESSIONAL EXPERIENCE]
 Include 3-4 relevant work experiences from the profile, tailored to job requirements with bullet points highlighting achievements.
 Do not list current/ongoing company names or job titles; treat the latest job as ending a few months ago and include gaps between jobs to reflect realistic timelines.
-[PROFESSIONAL EXPERIENCE]
+Format each experience as follows:
+Job Title
+Company Name
+Date Range (e.g., Jan 2020 - Dec 2022)
+• Bullet point describing achievement or responsibility
+• Another bullet point
+• Another bullet point
+
+Job Title
+Company Name
+Date Range
+• Bullet point
+• Bullet point
+[/PROFESSIONAL EXPERIENCE]
 
 [EDUCATION]
-Include relevant educational background from the profile.
-[EDUCATION]
+Include relevant educational background. Format each degree as follows:
+Degree Name, Major
+University Name
+Graduation Date or Date Range
+[/EDUCATION]
 
 [PROJECTS]
-Include 2-3 relevant projects from the profile with descriptions.
-[PROJECTS]
+Include 2-3 relevant projects. Format each project as follows:
+Project Name
+• Description or key feature
+• Description or key feature
+• Technologies used: List technologies
+[/PROJECTS]
 
 [CERTIFICATIONS]
 Include only the 3-5 most relevant certifications from the profile that match the job requirements. Do not include more than 5 certifications.
-[CERTIFICATIONS]
+[/CERTIFICATIONS]
 
 IMPORTANT INSTRUCTIONS:
-- Use the EXACT bracket format shown above: [SectionName] content [SectionName]
+- Every section MUST be properly enclosed with both opening and closing brackets exactly as shown: [SectionName] content [/SectionName].
 - Extract actual data from the profile (name, email, phone, location)
 - Do NOT use placeholder text or generic examples
 - Avoid job-post-style phrasing in the summary (e.g., "remote-ready" or "seeking [Role]"); focus on skills, experience, and achievements only.
 - Keep certifications limited to maximum 5 items
 - Make sure the resume is tailored to the specific job requirements and uses industry-standard formatting.
 - For all other sections (work experience, projects, education, certifications, skills), fabricate realistic, professional-sounding details that match the candidate's persona and the target job requirements.
-- Never ask the user for more details.
+- If the job description lacks details, do NOT produce a minimal resume — always create a full, rich, and competitive resume.
 - The output must always be a polished, ready-to-use resume.
-- Each section must be properly enclosed with matching opening and closing brackets.`
+- Each section must be properly enclosed with matching opening and closing brackets.
+- Never ask for clarification or more details.`
 
     const response = await openai.responses.create({
-      model: "gpt-5",
+      model: "gpt-5-nano",
       input: [
         {
           role: "user",
