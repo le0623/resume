@@ -115,8 +115,7 @@
         }
         
         .skills-list {
-            columns: 2;
-            column-gap: 30px;
+            columns: 1;
         }
         
         .skill-category {
@@ -168,9 +167,15 @@
             <h1 class="name">{{NAME}}</h1>
             <p class="title">{{TITLE}}</p>
             <div class="contact-info">
-                <span>{{EMAIL}}</span>
-                <span>{{PHONE}}</span>
-                <span>{{LOCATION}}</span>
+                <div class="contact-item">
+                    <span>{{EMAIL}}</span>
+                </div>
+                <div class="contact-item">
+                    <span>{{PHONE}}</span>
+                </div>
+                <div class="contact-item">
+                    <span>{{LOCATION}}</span>
+                </div>
             </div>
         </div>
         

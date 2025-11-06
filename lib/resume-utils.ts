@@ -26,7 +26,7 @@ export function parseResumeContent(resume: string): ResumeData {
     NAME: "John Doe",
     TITLE: "Software Engineer",
     EMAIL: "john.doe@email.com",
-    PHONE: "(555) 123-4567",
+    PHONE: "",
     LOCATION: "San Francisco, CA",
     SUMMARY: "Experienced software engineer with expertise in modern web technologies...",
     SKILLS: "",
@@ -44,7 +44,15 @@ export function parseResumeContent(resume: string): ResumeData {
   if (emailMatch) data.EMAIL = emailMatch[1].trim()
 
   const phoneMatch = resume.match(/\[Phone\]\s*([\s\S]*?)\s*\[\/Phone\]/i)
-  if (phoneMatch) data.PHONE = phoneMatch[1].trim()
+  if (phoneMatch && phoneMatch[1].trim()) {
+    const phoneValue = phoneMatch[1].trim()
+    // Treat "N/A" or similar placeholders as empty
+    if (phoneValue.toUpperCase() === 'N/A' || phoneValue.toUpperCase() === 'NA' || phoneValue === '-') {
+      data.PHONE = ''
+    } else {
+      data.PHONE = phoneValue
+    }
+  }
 
   const locationMatch = resume.match(/\[Location\]\s*([\s\S]*?)\s*\[\/Location\]/i)
   if (locationMatch) data.LOCATION = locationMatch[1].trim()
@@ -97,6 +105,12 @@ export function replacePlaceholders(template: string, data: ResumeData): string 
     result = result.replace(new RegExp(placeholder, 'g'), data[key as keyof ResumeData] || '')
   })
   
+  // Remove empty phone blocks if PHONE is missing or N/A
+  if (!data.PHONE || !data.PHONE.trim() || data.PHONE.trim().toUpperCase() === 'N/A') {
+    // Remove phone contact-item div for all templates
+    result = result.replace(/<div class="contact-item">\s*<span>📱<\/span>\s*<span>[\s\S]*?<\/span>\s*<\/div>/g, '')
+  }
+  
   return result
 }
 
@@ -108,28 +122,10 @@ export function formatTextWithLineBreaks(text: string): string {
 }
 
 /**
- * Format skills section with categories
+ * Format skills section - just display the text as-is with line breaks
  */
 export function formatSkills(skillsText: string): string {
-  const lines = skillsText.split('\n').filter(line => line.trim())
-  let html = ''
-  
-  lines.forEach(line => {
-    if (line.includes(':')) {
-      const [category, skills] = line.split(':')
-      html += `<div class="skill-category">
-        <h4>${category.trim()}</h4>
-        <div class="skill-list">${formatTextWithLineBreaks(skills.trim())}</div>
-      </div>`
-    } else {
-      html += `<div class="skill-category">
-        <h4>Skills</h4>
-        <div class="skill-list">${formatTextWithLineBreaks(line.trim())}</div>
-      </div>`
-    }
-  })
-  
-  return html
+  return formatTextWithLineBreaks(skillsText.trim())
 }
 
 /**
@@ -238,22 +234,47 @@ export function formatProjects(projText: string): string {
 
 /**
  * Format certifications section with certification entries
- * Limits to 3 items to prevent taking up too much space
+ * Expected format: 3 lines per certification (title, issuer, year) with blank line between entries
+ * Example:
+ * PCAP – Python Certified Associate
+ * Python Institute
+ * 2022
+ * 
+ * PCPP1 – Python Certified Professional Programmer 1
+ * Python Institute
+ * 2023
  */
 export function formatCertifications(certText: string): string {
-  const items = certText.split('\n').filter(item => item.trim()).slice(0, 3) // Limit to 3 items
+  // Split by double line breaks (blank lines separate certification entries)
+  const certBlocks = certText.split(/\n\s*\n/).filter(block => block.trim())
   let html = ''
   
-  items.forEach(item => {
-    if (item.includes(' - ')) {
-      const [name, issuer] = item.split(' - ')
+  certBlocks.forEach(block => {
+    const lines = block.split('\n').map(line => line.trim()).filter(line => line)
+    
+    if (lines.length >= 3) {
+      // Format: Title, Issuer, Year
+      const name = lines[0]
+      const issuer = lines[1]
+      const year = lines[2]
+      
       html += `<div class="cert-item">
-        <div class="cert-name">${name.trim()}</div>
-        <div class="cert-issuer">${issuer.trim()}</div>
+        <div class="cert-name">${name}</div>
+        <div class="cert-issuer">${issuer} • ${year}</div>
       </div>`
-    } else {
+    } else if (lines.length === 2) {
+      // Fallback: Title, Issuer (no year)
+      const name = lines[0]
+      const issuer = lines[1]
+      
       html += `<div class="cert-item">
-        <div class="cert-name">${item.trim()}</div>
+        <div class="cert-name">${name}</div>
+        <div class="cert-issuer">${issuer}</div>
+      </div>`
+    } else if (lines.length === 1) {
+      // Fallback: Title only
+      html += `<div class="cert-item">
+        <div class="cert-name">${lines[0]}</div>
       </div>`
     }
   })

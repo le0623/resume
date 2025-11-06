@@ -120,6 +120,10 @@ Project Name
 
 [CERTIFICATIONS]
 Include only the 3-5 most relevant certifications from the profile that match the job requirements. Do not include more than 5 certifications.
+Format each certification EXACTLY as follows (3 lines per certification with a blank line between entries):
+Certification Name
+Issuer/Organization Name
+Year (4 digits)
 [/CERTIFICATIONS]
 
 IMPORTANT INSTRUCTIONS:
